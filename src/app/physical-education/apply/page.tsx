@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 
 const NAVY = "#1B2A4A";
@@ -21,8 +21,23 @@ export default function ApplyPage() {
     status: "",
     privacy: false,
   });
+  const [utm, setUtm] = useState({
+    source: "",
+    medium: "",
+    campaign: "",
+  });
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setUtm({
+      source: params.get("utm_source") ?? "",
+      medium: params.get("utm_medium") ?? "",
+      campaign: params.get("utm_campaign") ?? "",
+    });
+  }, []);
 
   const isValid =
     form.name.trim() !== "" &&
@@ -30,10 +45,15 @@ export default function ApplyPage() {
     form.status !== "" &&
     form.privacy;
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
+  function handleChange(
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) {
     const { name, value, type } = e.target;
     if (type === "checkbox") {
-      setForm((prev) => ({ ...prev, [name]: (e.target as HTMLInputElement).checked }));
+      setForm((prev) => ({
+        ...prev,
+        [name]: (e.target as HTMLInputElement).checked,
+      }));
     } else if (name === "phone") {
       setForm((prev) => ({ ...prev, phone: formatPhone(value) }));
     } else {
@@ -41,15 +61,34 @@ export default function ApplyPage() {
     }
   }
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!isValid || submitting) return;
     setSubmitting(true);
-    setTimeout(() => {
-      console.log("상담 신청 데이터:", form);
-      setSubmitting(false);
+    setSubmitError("");
+    try {
+      const res = await fetch("/api/submit-form", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: form.name,
+          phone: form.phone,
+          status: form.status,
+          utm_source: utm.source,
+          utm_medium: utm.medium,
+          utm_campaign: utm.campaign,
+        }),
+      });
+      const json = await res.json();
+      if (!json.success) throw new Error(json.error ?? "오류가 발생했습니다");
       setSubmitted(true);
-    }, 800);
+    } catch (err) {
+      setSubmitError(
+        err instanceof Error ? err.message : "오류가 발생했습니다. 다시 시도해주세요."
+      );
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -87,10 +126,7 @@ export default function ApplyPage() {
         ) : (
           <>
             {/* ② 헤더 카드 */}
-            <div
-              className="rounded-t-2xl px-6 py-8"
-              style={{ background: NAVY }}
-            >
+            <div className="rounded-t-2xl px-6 py-8" style={{ background: NAVY }}>
               <p className="mb-3 text-sm font-semibold" style={{ color: ACCENT }}>
                 서플라이에듀
               </p>
@@ -194,6 +230,13 @@ export default function ApplyPage() {
                   </div>
                 </label>
               </div>
+
+              {/* 에러 메시지 */}
+              {submitError && (
+                <p className="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">
+                  {submitError}
+                </p>
+              )}
 
               {/* 제출 버튼 */}
               <button
