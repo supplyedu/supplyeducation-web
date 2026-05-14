@@ -81,6 +81,20 @@ export default function ApplyPage() {
       });
       const json = await res.json();
       if (!json.success) throw new Error(json.error ?? "오류가 발생했습니다");
+
+      // Meta Pixel 리드 전환 이벤트
+      if (typeof fbq !== "undefined") {
+        fbq("track", "Lead");
+      }
+      // GTM dataLayer 이벤트
+      if (typeof window !== "undefined" && window.dataLayer) {
+        window.dataLayer.push({
+          event: "form_submit",
+          form_type: "consultation",
+          page: "physical-education",
+        });
+      }
+
       setSubmitted(true);
     } catch (err) {
       setSubmitError(
