@@ -11,7 +11,7 @@ const STATUS_MAP: Record<string, string> = {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, phone, status, utm_source, utm_medium, utm_campaign } = body;
+    const { name, phone, course, status, calculatorData, utm_source, utm_medium, utm_campaign } = body;
 
     const key = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_KEY!);
     key.private_key = key.private_key.replace(/\\n/g, "\n");
@@ -37,10 +37,10 @@ export async function POST(request: Request) {
 
     await sheets.spreadsheets.values.append({
       spreadsheetId: process.env.GOOGLE_SHEETS_SPREADSHEET_ID!,
-      range: "A:E",
+      range: "A:G",
       valueInputOption: "USER_ENTERED",
       requestBody: {
-        values: [[name, phone, STATUS_MAP[status] ?? status, utmStr, kst]],
+        values: [[name, phone, STATUS_MAP[status] ?? status, utmStr, kst, course ?? "", calculatorData ?? ""]],
       },
     });
 

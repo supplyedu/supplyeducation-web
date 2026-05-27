@@ -133,7 +133,7 @@ function Navbar() {
           서플라이에듀
         </Link>
         <Link
-          href="/physical-education/apply"
+          href="/apply"
           className="rounded-full px-5 py-2 text-sm font-bold text-white transition-opacity hover:opacity-85"
           style={{ background: BLUE }}
         >
@@ -356,7 +356,7 @@ export default function PhysicalEducationPage() {
             </p>
             <div className="mt-10 flex flex-col items-start gap-4 sm:flex-row">
               <Link
-                href="/physical-education/apply"
+                href="/apply"
                 className="rounded-full px-8 py-4 text-base font-bold transition-transform hover:scale-105 active:scale-95"
                 style={{ background: BLUE, color: "#fff" }}
               >

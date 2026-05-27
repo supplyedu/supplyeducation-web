@@ -3,7 +3,13 @@
     "allow": [
       "Bash(mkdir -p \"c:\\\\Users\\\\hdcyb\\\\OneDrive\\\\바탕 화면\\\\supplyeducation-web\\\\src\\\\app\\\\physical-education\")",
       "Bash(npx tsc *)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(mkdir -p \"c:/Users/희찬/supplyeducation-web/public/team\" && ls /mnt/user-data/uploads/)",
+      "Read(//mnt/user-data/**)",
+      "Read(//c/Users/희찬/**)",
+      "Bash(find /mnt -name \"20260523_175921.png\")",
+      "Bash(find / -name \"20260523_175921.png\" 2>/dev/null | head -10)",
+      "Read(//c//**)"
     ],
     "additionalDirectories": [
       "c:\\Users\\hdcyb\\OneDrive\\바탕 화면\\supplyeducation-web\\src\\app"

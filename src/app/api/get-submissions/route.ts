@@ -12,7 +12,7 @@ export async function GET() {
 
     const res = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.GOOGLE_SHEETS_SPREADSHEET_ID!,
-      range: "A:E",
+      range: "A:G",
     });
 
     const rows = res.data.values ?? [];
@@ -28,6 +28,8 @@ export async function GET() {
       status: row[2] ?? "",
       utm: row[3] ?? "",
       date: row[4] ?? "",
+      course: row[5] ?? "",
+      calculatorData: row[6] ?? "",
     }));
 
     return Response.json({ success: true, data });
