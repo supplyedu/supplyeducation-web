@@ -686,12 +686,42 @@ function TeamSection() {
 /* ── 페이지 ── */
 export default function HomePage() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isDegreesOpen, setIsDegreesOpen] = useState(false);
+  const [isDegreesLocked, setIsDegreesLocked] = useState(false);
+  const degreesRef = useRef<HTMLDivElement>(null);
+  const [isQualOpen, setIsQualOpen] = useState(false);
+  const [isQualLocked, setIsQualLocked] = useState(false);
+  const qualRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    if (!isDegreesLocked) return;
+    const handler = (e: MouseEvent) => {
+      if (degreesRef.current && !degreesRef.current.contains(e.target as Node)) {
+        setIsDegreesOpen(false);
+        setIsDegreesLocked(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [isDegreesLocked]);
+
+  useEffect(() => {
+    if (!isQualLocked) return;
+    const handler = (e: MouseEvent) => {
+      if (qualRef.current && !qualRef.current.contains(e.target as Node)) {
+        setIsQualOpen(false);
+        setIsQualLocked(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [isQualLocked]);
 
   return (
     <div className="flex min-h-screen flex-col font-sans text-black antialiased">
@@ -716,16 +746,72 @@ export default function HomePage() {
           >
             서플라이에듀케이션
           </Link>
-          <div className="flex items-center gap-4">
-            <a
-              href="#courses"
-              className="hidden text-sm font-medium hover:opacity-70 sm:block"
-              style={{
-                color: isScrolled ? "#000000" : "#FFFFFF",
-                transition: "color 0.3s",
-              }}
+          <div className="flex items-center gap-6">
+            <div
+              ref={degreesRef}
+              className="relative hidden sm:block"
+              onMouseEnter={() => { if (!isDegreesLocked) setIsDegreesOpen(true); }}
+              onMouseLeave={() => { if (!isDegreesLocked) setIsDegreesOpen(false); }}
             >
-              과정소개
+              <button
+                className="flex items-center gap-1 text-sm font-medium hover:opacity-70"
+                style={{ color: isScrolled ? "#000000" : "#FFFFFF", transition: "color 0.3s", background: "none", border: "none", cursor: "pointer", padding: 0 }}
+                onClick={() => {
+                  const next = !isDegreesLocked;
+                  setIsDegreesLocked(next);
+                  setIsDegreesOpen(next);
+                }}
+              >
+                학위취득
+                <ChevronDown
+                  size={14}
+                  style={{ transition: "transform 0.2s", transform: isDegreesOpen ? "rotate(180deg)" : "rotate(0deg)" }}
+                />
+              </button>
+              {isDegreesOpen && (
+                <div style={{ position: "absolute", top: "100%", left: "50%", transform: "translateX(-50%)", marginTop: 8, background: "#ffffff", borderRadius: 10, boxShadow: "0 4px 20px rgba(0,0,0,0.12)", overflow: "hidden", minWidth: 130, zIndex: 100 }}>
+                  <Link href="/majors" className="block px-5 py-3 text-sm text-gray-800 hover:text-[#1a1aad] hover:bg-gray-50 whitespace-nowrap transition-colors">경영 아동 심리 등</Link>
+                  <Link href="/sports" className="block px-5 py-3 text-sm text-gray-800 hover:text-[#1a1aad] hover:bg-gray-50 border-t border-gray-100 transition-colors">체육학</Link>
+                  <Link href="/electrical" className="block px-5 py-3 text-sm text-gray-800 hover:text-[#1a1aad] hover:bg-gray-50 border-t border-gray-100 transition-colors">전기공학</Link>
+                  <Link href="/computer" className="block px-5 py-3 text-sm text-gray-800 hover:text-[#1a1aad] hover:bg-gray-50 border-t border-gray-100 transition-colors">컴퓨터공학</Link>
+                </div>
+              )}
+            </div>
+            <div
+              ref={qualRef}
+              className="relative hidden sm:block"
+              onMouseEnter={() => { if (!isQualLocked) setIsQualOpen(true); }}
+              onMouseLeave={() => { if (!isQualLocked) setIsQualOpen(false); }}
+            >
+              <button
+                className="flex items-center gap-1 text-sm font-medium hover:opacity-70"
+                style={{ color: isScrolled ? "#000000" : "#FFFFFF", transition: "color 0.3s", background: "none", border: "none", cursor: "pointer", padding: 0 }}
+                onClick={() => {
+                  const next = !isQualLocked;
+                  setIsQualLocked(next);
+                  setIsQualOpen(next);
+                }}
+              >
+                국가자격증
+                <ChevronDown
+                  size={14}
+                  style={{ transition: "transform 0.2s", transform: isQualOpen ? "rotate(180deg)" : "rotate(0deg)" }}
+                />
+              </button>
+              {isQualOpen && (
+                <div style={{ position: "absolute", top: "100%", left: "50%", transform: "translateX(-50%)", marginTop: 8, background: "#ffffff", borderRadius: 10, boxShadow: "0 4px 20px rgba(0,0,0,0.12)", overflow: "hidden", minWidth: 130, zIndex: 100 }}>
+                  <Link href="#" className="block px-5 py-3 text-sm text-gray-800 hover:text-[#1a1aad] hover:bg-gray-50 whitespace-nowrap transition-colors">사회복지사2급 보육교사2급</Link>
+                  <Link href="#" className="block px-5 py-3 text-sm text-gray-800 hover:text-[#1a1aad] hover:bg-gray-50 border-t border-gray-100 whitespace-nowrap transition-colors">산업기사 기사 자격증</Link>
+                  <Link href="#" className="block px-5 py-3 text-sm text-gray-800 hover:text-[#1a1aad] hover:bg-gray-50 border-t border-gray-100 whitespace-nowrap transition-colors">종합미용면허증</Link>
+                </div>
+              )}
+            </div>
+            <a
+              href="#"
+              className="hidden text-sm font-medium hover:opacity-70 sm:block"
+              style={{ color: isScrolled ? "#000000" : "#FFFFFF", transition: "color 0.3s" }}
+            >
+              대졸자전형
             </a>
             <Link
               href="/apply"
